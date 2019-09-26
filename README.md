@@ -16,7 +16,7 @@
 
 ## 디렉토리 구조
 ```
-DataBase        데이터베이스 
-Settings
-Source_Code             웹 페이지(JSP, CSS 등) 소스 코드 
+DataBase : 데이터베이스 
+Settings : 설정
+Source_Code : 웹 페이지(JSP, CSS 등) 소스 코드 
 ```
