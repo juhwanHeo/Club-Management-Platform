@@ -13,3 +13,9 @@
 - mysql 5.1.73
 - tomcat7
 - mysql-connector-java-5.1.45-bin
+
+## 디렉토리 구조
+```
+DataBase        데이터베이스 
+Source_Code             웹 페이지(JSP, CSS 등) 소스 코드 
+```
