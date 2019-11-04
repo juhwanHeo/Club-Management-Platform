@@ -35,6 +35,7 @@ html, body {height:100%;}
 #snb li {float:left; height:14px; margin:8px 0; padding:0; border-left:1px solid #999;}
 #snb li:first-child {border:0;}
 #snb a {float:left; height:30px; margin:-8px 0; padding:0 10px;}
+#snb .txt {float:left; height:30px; margin:-8px 0; padding:0 10px;}
 
 #gnb {position:absolute; top:0; left:300px; width:600px; height:100px; margin:0; padding:0; list-style:none;}
 #gnb li {float:left; width:150px; height:100px; margin:0; padding:0;}

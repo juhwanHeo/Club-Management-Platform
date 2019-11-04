@@ -6,9 +6,9 @@ select {border: 1px solid #dddddd; height: 30px; background: #fff; margin-right:
 input[type="text"] {height: 30px; border: 1px solid #dddddd; width: 300px; padding-left: 10px; padding-right: 50px;}
 button{cursor: pointer;}
 /* layout */
-#content {padding-bottom:3em; text-align:justify; z-index:200;}
+#content {text-align:justify; z-index:200;}
 
-.category {padding: 20px 5px 5px; background: #F3F3F3; position: relative; overflow: hidden;	width: 1200px; max-width: 100%; margin: 0 auto;}
+.category {padding: 20px 5px 5px; background: #F3F3F3; position: relative; overflow: hidden; width: 1200px; max-width: 100%; margin: 0 auto;}
 .category .title {font-weight: 600; font-size: 18px; margin-right: 40px;}
 .category .category-btn { position: relative; right: 53px; text-indent: -999em;	width: 50px; height: 30px; background: url(../image/btn.gif) no-repeat 50% 50%; border: 0;}
 
@@ -18,6 +18,7 @@ button{cursor: pointer;}
 .latest {width:1200px; height:350px; margin:0 auto; border-bottom: 1px solid #797979;}
 
 .star {position: relative; top: -26px; left:700px;}
+.star-btn {background-color: white; border: none;}
 
 .logo {float:left;  width:350px; height:180px; margin: 45px 25px;}
 .logo .img{width: 300px; height:250px;}
@@ -31,9 +32,7 @@ button{cursor: pointer;}
 .tbl td {overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
 .tbl th, td {padding-left:20px;}
 
-.tbl-btn {float:right; margin-right:50px; margin-top:30px; background: #3b5998; width:120px; height:30px; color:white; border:none; border-radius: 5px; }
+.tbl-btn {float:right; margin-right:50px; margin-top:30px; background: #3b5998; width:120px; height:30px; color:white; border:none; border-radius: 5px; cursor: pointer;}
 
-#page {clear: both;width: 100%;text-align: center; margin-top: 30px;}
-
-#footer {left:0; bottom:0; width:100%; height:8em; background:#666; color:#FFF; z-index:300;}
+#footer {position:absolute; left:0; bottom:0; width:100%; height:8em; background:#666; color:#FFF; z-index:300;}
 #footer address {padding:3em 0 0; font-style:normal;}
