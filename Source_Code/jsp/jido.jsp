@@ -19,7 +19,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=1200">
-<title>한림대학교 음식점 조회</title>
+<title>한림대학교 동아리</title>
 <link rel="stylesheet" type="text/css" href="css/common.css">
 <link rel="stylesheet" type="text/css" href="css/jido.css">
 </head>
@@ -39,10 +39,17 @@
 			</h1>
 			<a href="#content" class="skip">본문 바로가기</a>
 
+			<%if (username == null) {%>
 			<ul id="snb">
-				<li><a href="index.html">로그인</a></li>
+				<li><a href="login.jsp">로그인</a></li>
 				<li><a href="index.html">회원가입</a></li>
 			</ul>
+			<%}else{ %>
+				<ul id="snb">
+					<li><span class="txt"><%out.print((String) session.getAttribute("username") + " 님 환영합니다.");%></span></li>
+					<li><a href='logoutAction.jsp'>로그아웃</a></li>
+				</ul>
+			<%} %>
 
 			<ul id="gnb">
 				<li><a href="club_search.jsp">동아리조회</a></li>

@@ -21,7 +21,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=1200">
-<title>한림대학교 우수 동아리</title>
+<title>한림대학교 동아리</title>
 <link rel="stylesheet" type="text/css" href="css/common.css">
 <link rel="stylesheet" type="text/css" href="css/search.css">
 <link rel="stylesheet" type="text/css" href="css/top.css">
@@ -32,14 +32,11 @@
 <body>
 
 	<%
-	request.setCharacterEncoding("UTF-8");
+		request.setCharacterEncoding("UTF-8");
 		String username = null;
 		if (session.getAttribute("username") != null) {
 			username = (String) session.getAttribute("username");
 		}
-	%>
-
-	<%
 		
 		String club_gb_cd = ""; //클럽 구분(중앙,과)
 		String club_at_cd = ""; //클럽 속성(학술,운동)
@@ -93,10 +90,18 @@
 			</h1>
 			<a href="#content" class="skip">본문 바로가기</a>
 
+			<%if (username == null) {%>
 			<ul id="snb">
-				<li><a href="index.html">로그인</a></li>
+				<li><a href="login.jsp">로그인</a></li>
 				<li><a href="index.html">회원가입</a></li>
 			</ul>
+			<%}else{ %>
+			<ul id="snb">
+				<li><span class="txt"> <%out.print((String) session.getAttribute("username") + " 님 환영합니다.");%>
+				</span></li>
+				<li><a href='logoutAction.jsp'>로그아웃</a></li>
+			</ul>
+			<%} %>
 
 			<ul id="gnb">
 				<li><a href="club_search.jsp">동아리조회</a></li>
@@ -111,7 +116,7 @@
 				<form method="get" action="top_club.jsp" id="frm">
 					<h2><%=title %></h2>
 					<ul>
-<!-- 						<li><button name="club_at_cd" onclick="this.form.submit()"
+						<!-- 						<li><button name="club_at_cd" onclick="this.form.submit()"
 								value="">전체</button></li>
 						<li><button name="club_gb_cd" onclick="this.form.submit()"
 								value="001001">중앙</button></li>
@@ -130,64 +135,107 @@
 								value="002005">종교</button></li>
 						<li><button name="club_at_cd" onclick="this.form.submit()"
 								value="002006">기타</button></li> -->
-						<li class="on"><a href="top_club.jsp?" >전체</a></li>		
-						<li><a href="top_club.jsp?club_gb_cd=001001 " >중앙</a></li>
-						<li><a href="top_club.jsp?club_gb_cd=001002 " >과</a></li>
-						<li><a href="top_club.jsp?club_at_cd=002001 " >학술</a></li>
-						<li><a href="top_club.jsp?club_at_cd=002002 " >운동</a></li>
-						<li><a href="top_club.jsp?club_at_cd=002003 " >봉사</a></li>
-						<li><a href="top_club.jsp?club_at_cd=002004 " >문화</a></li>
-						<li><a href="top_club.jsp?club_at_cd=002005 " >종교</a></li>
-						<li><a href="top_club.jsp?club_at_cd=002006 " >기타</a></li>
+						<li class="on"><a href="top_club.jsp?">전체</a></li>
+						<li><a href="top_club.jsp?club_gb_cd=001001 ">중앙</a></li>
+						<li><a href="top_club.jsp?club_gb_cd=001002 ">과</a></li>
+						<li><a href="top_club.jsp?club_at_cd=002001 ">학술</a></li>
+						<li><a href="top_club.jsp?club_at_cd=002002 ">운동</a></li>
+						<li><a href="top_club.jsp?club_at_cd=002003 ">봉사</a></li>
+						<li><a href="top_club.jsp?club_at_cd=002004 ">문화</a></li>
+						<li><a href="top_club.jsp?club_at_cd=002005 ">종교</a></li>
+						<li><a href="top_club.jsp?club_at_cd=002006 ">기타</a></li>
 					</ul>
 				</form>
 			</div>
 
-
+			<jsp:useBean id="dao" class="exam.jdbc.JDBC_clubDAO" />
 			<%
-				for (int i = 0; i < 5; i++) {
+            ArrayList<ClubVO> gb_list = dao.getTopClub(club_gb_cd, club_at_cd);
+			
+            int rank = 0;
+				for (ClubVO vo : gb_list) {
+					rank ++;
 			%>
 
+			<%String star_state = ""; %>
 			<div class="latest">
 				<div class="logo">
-					<span class="num_item"> 1 </span> <img class="img"
-						src="image/poster/c8.jpg" onerror="this.src='image/error.png'"></img>
+					<span class="num_item"> <%=rank %>
+					</span> <img class="img" src="image/poster/<%=vo.getIntro_file_nm()%>"
+						onerror="this.src='image/error.png'"></img>
 				</div>
 				<div class="tbl-info">
-					<h3>동아리 이름</h3>
+					<h3><%=vo.getClub_nm() %></h3>
 					<div class="star">
-						<input name="submit" type="image" src="image/star0.png" width="23"
-							height="23"> &nbsp; 3
+						<%
+							if (username == null) {
+						%>
+						<button type="button" class="star-btn" onclick="postPopUp();">
+							<img src="image/star0.png" width="23" height="23">
+						</button>
+						<%
+							} else {
+									star_state = dao.getStar(vo.getClub_id(), username);
+									if (star_state.equals("Y")) {
+						%>
+						<button type="button" class="star-btn"
+							onclick="location.href='likeAction.jsp?club_id=<%=vo.getClub_id()%>&state=1'">
+							<img src="image/star1.png" width="23" height="23">
+						</button>
+						<%
+							} else if (star_state.equals("N")) {
+						%>
+						<button type="button" class="star-btn"
+							onclick="location.href='likeAction.jsp?club_id=<%=vo.getClub_id()%>&state=0'">
+							<img src="image/star0.png" width="23" height="23">
+						</button>
+						<%
+							}
+						}
+						%>
+						<%=dao.getStarCnt(vo.getClub_id())%>
 					</div>
 					<table class="tbl">
 						<tr>
 							<th>회원수</th>
-							<td>46명</td>
+							<td><%=vo.getCnt() %></td>
 							<th>결성년도</th>
-							<td>2011.04.09</td>
+							<%if (vo.getOpen_dt().equals("") ) {
+                        %><td></td>
+							<% } 
+						else{%><td><%=vo.getOpen_dt().substring(0, 4)%>년</td>
+							<%} %>
 						</tr>
 						<tr>
 							<th>회장</th>
-							<td>박태언</td>
+							<td><%=vo.getStaff_nm() %></td>
 							<th>지도교수</th>
-							<td>이원철</td>
+							<td><%=dao.getProfessor(vo.getClub_id())%></td>
 						</tr>
 						<tr>
 							<th>설립 목적</th>
-							<td colspan="3">창업, 특허출원과 공모전참여를 통한
-								목표달성33333333333333333333333333333333333333333333333333333333333333333333333333</td>
+							<td colspan="3"><%=vo.getClub_aim()%></td>
 						</tr>
 						<tr>
 							<th>주요 활동</th>
-							<td colspan="3">창업 동아리</td>
+							<td colspan="3"><%=vo.getClub_active()%></td>
 						</tr>
 					</table>
 				</div>
-				<ul>
-					<li><button class="tbl-btn">가입신청</button></li>
-					<li><button class="tbl-btn">더보기</button></li>
-					<li><button class="tbl-btn">동아리 포스터</button></li>
-				</ul>
+
+				<form method="post" action="club_SignUp_Form.jsp" target="w"
+					onsubmit="return postPopUp();">
+					<input type="hidden" name="club_id" value="<%=vo.getClub_id()%>">
+					<input type="hidden" name="club_nm" value="<%=vo.getClub_nm()%>">
+					<ul>
+						<li><input type="submit" value="가입 신청" class="tbl-btn"></li>
+						<li><button type="button" class="tbl-btn">더보기</button></li>
+						<li><button type="button" class="tbl-btn"
+								onclick="window.open('image/clubposter/<%=vo.getIntro_file_path()%>','new img', 'width=750,height=850')">동아리
+								포스터</button></li>
+					</ul>
+				</form>
+
 			</div>
 			<%
 				}
@@ -195,13 +243,23 @@
 
 		</div>
 		<hr>
-		<div id="footer">
+		<div id="footer" style="position: relative;">
 			<div class="copyright">
 				<address>Copyright 2019. 김정인, 김진섭. All Rights Reserved.</address>
 			</div>
 		</div>
 
 	</div>
-	
+	<script>
+		function postPopUp() {
+	<%if (username == null) {%>
+		alert("로그인이 필요합니다.");
+			return false;
+	<%} else {%>
+		window.open('', 'w', 'width=900,height=650,location=no,status=no');
+			return true;
+	<%}%>
+		}
+	</script>
 </body>
 </html>

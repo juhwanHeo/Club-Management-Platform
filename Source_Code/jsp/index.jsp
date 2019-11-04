@@ -1,5 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+	pageEncoding="UTF-8"%>
+<%@page import="bbs.*"%>
+<%@page import="java.util.ArrayList"%>
+<%@page import="exam.jdbc.ClubVO"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -7,99 +10,176 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=1200">
 <title>한림대학교 동아리</title>
-<link rel="stylesheet" type="text/css" href="css/default.css">
+<link rel="stylesheet" type="text/css" href="css/default.css?">
 
 </head>
 <body>
-<div id="wrap">
-    <div id="header">
-        <h1><a href="index.jsp"><img src="image/logo.gif" alt="한림대학교 동아리"></a></h1>
-        <a href="#content" class="skip">본문 바로가기</a>
 
-        <ul id="snb">
-        <li><a href="index.html">로그인</a></li>
-        <li><a href="index.html">회원가입</a></li>
-        </ul>
+	<%
+		request.setCharacterEncoding("UTF-8");
 
-        <ul id="gnb">
-        <li><a href="club_search.jsp">동아리조회</a></li>
-        <li><a href="top_club.jsp">우수동아리</a></li>
-        <li><a href="board.jsp">공지사항</a></li>
-        <li><a href="jido.jsp">주변음식점</a></li>
-        </ul>
-    </div>
-    <hr>
-    <div id="visual"><img src="image/visual.jpg" alt=""></div>
-    <hr>
-    <div id="content">
-        <div class="latest">
-            <div class="notice">
-                <h2>공지사항</h2>
-                <ul>
-                <li><a href="index.html">10월 20일 현재 동아리 현황</a> <span class="date">2019-10-11</span></li>
-                <li><a href="index.html">한림 대학교 우수 동아리 선정 기준</a> <span class="date">2019-10-11</span></li>
-                <li><a href="index.html">한림 대학교동아리 사이트 이용 방법 안내</a> <span class="date">2019-10-11</span></li>
-                <li><a href="index.html">10월 20일 현재 동아리 현황</a> <span class="date">2019-10-11</span></li>
-                <li><a href="index.html">한림 대학교 우수 동아리 선정 기준</a> <span class="date">2019-10-11</span></li>
-                <li><a href="index.html">한림 대학교동아리 사이트 이용 방법 안내</a> <span class="date">2019-10-11</span></li>
-                </ul>
-                <a href="index.html" class="more">더보기</a>
-            </div>
-            <div class="banner">
-                <h2>배너</h2>
-                <p><img src="image/banner.gif" alt="지금 로그인하고 다양한 동아리를 만나세요!"></p>
-            </div>
-        </div>
-        <div class="club">
-            <div class="intro">
-                <h2>동아리</h2>
-                <ul>
-                <li>
-                    <div class="thm"><img src="image/thm_club1.gif" alt=""></div>
-                    <div class="tit"><a href="index.html">CHAOS</a></div>
-                    <div class="note">컴퓨터에 관한 전반적인 기술을 함께</div>
-                    <div class="tag">#멘토링활동 #중앙동아리 #학술</div>
-                </li>
-                <li>
-                    <div class="thm"><img src="image/thm_club2.gif" alt=""></div>
-                    <div class="tit"><a href="index.html">한림특허청</a></div>
-                    <div class="note">창업, 특허출원과 공모전 참여를 통한 목표달성</div>
-                    <div class="tag">#멘토링활동 #중앙동아리 #학술</div>
-                </li>
-                <li>
-                    <div class="thm"><img src="image/thm_club3.gif" alt=""></div>
-                    <div class="tit"><a href="index.html">누리봄</a></div>
-                    <div class="note">기획력, 리더십, 발표력을 키우고 능동성과 자발성을 지향</div>
-                    <div class="tag">#자기개발 #과동아리 #학술</div>
-                </li>
-                <li>
-                    <div class="thm"><img src="image/thm_club4.gif" alt=""></div>
-                    <div class="tit"><a href="index.html">해강박</a></div>
-                    <div class="note">건강한 신체를 단련, 활동적인 생활과 검도 정신으로 예의..</div>
-                    <div class="tag">#검도 #중앙동아리 #운동</div>
-                </li>
-                <li>
-                    <div class="thm"><img src="image/thm_club5.gif" alt=""></div>
-                    <div class="tit"><a href="index.html">청룡회</a></div>
-                    <div class="note">투철한 국가관을 가지고 사회 봉사 활동을 통하여 국가와..</div>
-                    <div class="tag">#해병대 #중앙동아리 #봉사</div>
-                </li>
-                <li>
-                    <div class="thm"><img src="image/thm_club6.gif" alt=""></div>
-                    <div class="tit"><a href="index.html">춤바람</a></div>
-                    <div class="note">춤을 통한 자기개발과 교내 공연 문화 형성</div>
-                    <div class="tag">#힙합 #중앙동아리 #문화</div>
-                </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-    <hr>
-    <div id="footer">
-        <div class="copyright">
-            <address>Copyright 2019. 김정인, 김진섭. All Rights Reserved.</address>
-        </div>
-    </div>
-</div>
+		String username = null;
+		if (session.getAttribute("username") != null) {
+			username = (String) session.getAttribute("username");
+		}
+	%>
+
+	<div id="wrap">
+		<div id="header">
+			<h1>
+				<a href="index.jsp"><img src="image/logo.gif" alt="한림대학교 동아리"></a>
+			</h1>
+			<a href="#content" class="skip">본문 바로가기</a>
+
+			<%
+				if (username == null) {
+			%>
+			<ul id="snb">
+				<li><a href="login.jsp">로그인</a></li>
+				<li><a href="index.html">회원가입</a></li>
+			</ul>
+			<%
+				} else {
+			%>
+			<ul id="snb">
+				<li><span class="txt"> <%
+ 	out.print((String) session.getAttribute("username") + " 님 환영합니다.");
+ %>
+				</span></li>
+				<li><a href='logoutAction.jsp'>로그아웃</a></li>
+			</ul>
+			<%
+				}
+			%>
+			<ul id="gnb">
+				<li><a href="club_search.jsp">동아리조회</a></li>
+				<li><a href="top_club.jsp">우수동아리</a></li>
+				<li><a href="board.jsp">공지사항</a></li>
+				<li><a href="jido.jsp">주변음식점</a></li>
+			</ul>
+		</div>
+		<hr>
+		<div id="visual">
+			<img src="image/visual.jpg" alt="">
+		</div>
+
+		<hr>
+
+		<div id="content">
+			<div class="latest">
+				<div class="notice">
+					<h2>공지사항</h2>
+					<ul>
+						<jsp:useBean id="bbsDao" class="bbs.BbsDAO" />
+						<%
+							ArrayList<Bbs> bbs = bbsDao.get_intro(1, "007001");
+							for (Bbs vo : bbs) {
+						%>
+						<li><a
+							href="view.jsp?BOARD_NO=<%=vo.getBOARD_NO()%>&club_id=1&board_cd=007001"><%=vo.getTITLE()%></a>
+							<span class="date"><%=vo.getINPUT_DATE()%></span></li>
+						<%
+							}
+						%>
+					</ul>
+					<a href="board.jsp" class="more">더보기</a>
+				</div>
+				<div class="banner">
+					<h2>배너</h2>
+					<p>
+						<img src="image/banner.gif" alt="지금 로그인하고 다양한 동아리를 만나세요!">
+					</p>
+				</div>
+			</div>
+
+			<jsp:useBean id="clubDao" class="exam.jdbc.JDBC_clubDAO" />
+
+			<div class="club">
+				<div class="intro">
+					<h2>동아리</h2>
+					<%
+						if (username == null) {
+					%>
+					<%
+						ArrayList<ClubVO> list = clubDao.getClubIntro("");
+					%>
+					<ul>
+						<%
+							for (ClubVO vo : list) {
+						%>
+						<li>
+							<div class="thm">
+								<img class="logo" src="image/poster/<%=vo.getIntro_file_nm()%>"
+									onerror="this.src='image/error.png'" alt="">
+							</div>
+							<div class="tit">
+								<a href="club_search.jsp?search=<%=vo.getClub_nm()%>"><%=vo.getClub_nm()%></a>
+							</div>
+							<div class="note"><%=vo.getClub_aim()%></div>
+							<div class="tag">
+								#<%=vo.getClub_active()%>
+								#<%=vo.getClub_gb_cd()%>
+								#<%=vo.getClub_at_cd()%></div>
+						</li>
+						<%
+							}
+						%>
+					</ul>
+					<%
+						} else {
+							ArrayList<ClubVO> list = clubDao.getClubIntro(username);
+					%>
+					<ul>
+						<%
+							for (ClubVO vo : list) {
+						%>
+						<li>
+							<div class="thm">
+								<img class="logo" src="image/poster/<%=vo.getIntro_file_nm()%>"
+									onerror="this.src='image/error.png'" alt="">
+
+							</div> <jsp:useBean id="dao" class="exam.jdbc.JDBC_clubDAO" /> <%String star_state = dao.getStar(vo.getClub_id(), username);%>
+							<div class="tit">
+								<a href="club_search.jsp?search=<%=vo.getClub_nm()%>"><%=vo.getClub_nm()%></a>
+
+								<%if (star_state.equals("Y")) { %>
+								<button type="button" class="star-btn"
+									onclick="location.href='likeAction.jsp?club_id=<%=vo.getClub_id()%>&state=1'">
+									<img src="image/star1.png" width="23" height="23">
+								</button>
+								<%
+							} else if (star_state.equals("N")) {
+							%>
+								<button type="button" class="star-btn"
+									onclick="location.href='likeAction.jsp?club_id=<%=vo.getClub_id()%>&state=0'">
+									<img src="image/star0.png" width="23" height="23">
+								</button>
+								<%
+							}%>
+
+							</div>
+							<div class="note"><%=vo.getStaff_cd() %></div>
+							<div class="tag">
+								#<%=vo.getClub_gb_cd()%>
+								#<%=vo.getClub_at_cd()%></div>
+						</li>
+						<%
+							}
+						%>
+					</ul>
+					<%
+						}
+					%>
+				</div>
+			</div>
+
+		</div>
+		<hr>
+		<div id="footer">
+			<div class="copyright">
+				<address>Copyright 2019. 김정인, 김진섭. All Rights Reserved.</address>
+			</div>
+		</div>
+	</div>
 </body>
 </html>

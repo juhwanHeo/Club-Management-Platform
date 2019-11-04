@@ -21,9 +21,10 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=1200">
-<title>한림대학교 동아리 조회</title>
+<title>한림대학교 동아리</title>
 <link rel="stylesheet" type="text/css" href="css/common.css">
-<link rel="stylesheet" type="text/css" href="css/search.css">
+<link rel="stylesheet" type="text/css" href="css/search.css?after">
+<link rel="stylesheet" type="text/css" href="css/page.css?after">
 </head>
 
 <body>
@@ -85,11 +86,27 @@
 			</h1>
 			<a href="#content" class="skip">본문 바로가기</a>
 
+			<%
+				if (username == null) {
+			%>
 			<ul id="snb">
-				<li><a href="index.html">로그인</a></li>
+				<li><a href="login.jsp">로그인</a></li>
 				<li><a href="index.html">회원가입</a></li>
 			</ul>
-
+			<%
+				} else {
+			%>
+			<ul id="snb">
+				<li><span class="txt">
+						<%
+							out.print((String) session.getAttribute("username") + " 님 환영합니다.");
+						%>
+				</span></li>
+				<li><a href='logoutAction.jsp'>로그아웃</a></li>
+			</ul>
+			<%
+				}
+			%>
 			<ul id="gnb">
 				<li><a href="club_search.jsp">동아리조회</a></li>
 				<li><a href="top_club.jsp">우수동아리</a></li>
@@ -116,7 +133,7 @@
 								동아리</option>
 					</select></li>
 					<li><input type="text" id="search" name="search" size="30"
-						value="<%=search%>" onfocus="this.select()">
+						value="<%=search%>" onfocus="this.select()" autocomplete="off">
 						<button type="submit" class="category-btn">검색</button></li>
 
 				</ul>
@@ -141,62 +158,188 @@
 		</div>
 		<hr>
 
+		<jsp:useBean id="dao" class="exam.jdbc.JDBC_clubDAO" />
+
 		<div id="content">
 			<div class="result">
-				<h4>검색결과가 없습니다.</h4>
+				<%
+					ArrayList<ClubVO> gb_list = dao.getClublist(club_gb_cd, search, club_at_cd, pageNumber);
+					int totalcount = 0;
+					try {
+						totalcount = gb_list.get(0).getRow_count();
+					} catch (Exception e) {
+					}
+					if (totalcount == 0) {
+				%><h4>검색 결과가 없습니다.</h4>
+				<%
+					} else {
+				%>
+				<h4>
+					검색 결과는<%=totalcount%>개 입니다.
+				</h4>
+				<%
+					}
+				%>
 			</div>
 
 			<%
-				for (int i = 0; i < 2; i++) {
+				for (ClubVO vo : gb_list) {
+					String star_state = "";
 			%>
 			<div class="latest">
 				<div class="logo">
-					<img class="img" src="image/poster/c8.jpg"
+					<img class="img" src="image/poster/<%=vo.getIntro_file_nm()%>"
 						onerror="this.src='image/error.png'"></img>
 				</div>
 				<div class="tbl-info">
-					<h3>동아리 이름</h3>
+					<h3><%=vo.getClub_nm()%></h3>
 					<div class="star">
-						<input name="submit" type="image" src="image/star0.png" width="23"
-							height="23"> &nbsp; 3
+						<%
+							if (username == null) {
+						%>
+						<button type="button" class="star-btn" onclick="postPopUp();">
+							<img src="image/star0.png" width="23" height="23">
+						</button>
+						<%
+							} else {
+									star_state = dao.getStar(vo.getClub_id(), username);
+									if (star_state.equals("Y")) {
+						%>
+						<button type="button" class="star-btn"
+							onclick="location.href='likeAction.jsp?club_id=<%=vo.getClub_id()%>&state=1'">
+							<img src="image/star1.png" width="23" height="23">
+						</button>
+						<%
+							} else if (star_state.equals("N")) {
+						%>
+						<button type="button" class="star-btn"
+							onclick="location.href='likeAction.jsp?club_id=<%=vo.getClub_id()%>&state=0'">
+							<img src="image/star0.png" width="23" height="23">
+						</button>
+						<%
+							}
+						}
+						%>
+						<%=dao.getStarCnt(vo.getClub_id())%>
+						<!-- <input name="submit" type="image" src="image/star0.png" width="23"
+							height="23"> &nbsp; 3 -->
 					</div>
 					<table class="tbl">
 						<tr>
 							<th>회원수</th>
-							<td>46명</td>
+							<td><%=vo.getCnt()%>명</td>
 							<th>결성년도</th>
-							<td>2011.04.09</td>
+							<%
+								if (vo.getOpen_dt().equals("")) {
+							%>
+							<td></td>
+							<%
+								} else {
+							%>
+							<td><%=vo.getOpen_dt().substring(0, 4)%>년</td>
+							<%
+								}
+							%>
 						</tr>
 						<tr>
 							<th>회장</th>
-							<td>박태언</td>
+							<td><%=vo.getStaff_nm()%></td>
 							<th>지도교수</th>
-							<td>이원철</td>
+							<td><%=dao.getProfessor(vo.getClub_id())%></td>
 						</tr>
 						<tr>
 							<th>설립 목적</th>
-							<td colspan="3">창업, 특허출원과 공모전참여를 통한
-								목표달성33333333333333333333333333333333333333333333333333333333333333333333333333</td>
+							<td colspan="3"><%=vo.getClub_aim()%></td>
 						</tr>
 						<tr>
 							<th>주요 활동</th>
-							<td colspan="3">창업 동아리</td>
+							<td colspan="3"><%=vo.getClub_active()%></td>
 						</tr>
 					</table>
 				</div>
-				<ul>
-					<li><button class="tbl-btn">가입신청</button></li>
-					<li><button class="tbl-btn">더보기</button></li>
-					<li><button class="tbl-btn">동아리 포스터</button></li>
-				</ul>
+
+				<form method="post" action="club_SignUp_Form.jsp" target="w"
+					onsubmit="return postPopUp();">
+					<input type="hidden" name="club_id" value="<%=vo.getClub_id()%>">
+					<input type="hidden" name="club_nm" value="<%=vo.getClub_nm()%>">
+					<ul>
+						<li><input type="submit" value="가입 신청" class="tbl-btn"></li>
+						<li><button type="button" class="tbl-btn">더보기</button></li>
+						<li><button type="button" class="tbl-btn"
+								onclick="window.open('image/clubposter/<%=vo.getIntro_file_path()%>','new img', 'width=750,height=850')">동아리
+								포스터</button></li>
+					</ul>
+				</form>
+
+
 			</div>
 			<%
 				}
 			%>
-			<div id="page">
-				<a href="#">1</a> 
-				<a href="#">2</a> 
-				<a href="#">3</a>
+			<div class="page_wrap">
+				<div class="page_nation">
+					<%
+						int countList = 4;
+						int countPage = 5;
+						int totalPage = totalcount / countList;
+						if (totalcount > countList * totalPage) {
+							totalPage++;
+						}
+						//현재 페이지가 총 페이지 번호보다 클 경우 
+						if (totalPage < pageNumber) {
+							pageNumber = totalPage;
+						}
+						int startPage = ((pageNumber - 1) / countPage) * countPage + 1; //페이지 번호  시작
+						int endPage = startPage + countPage - 1; //페이지 번호 끝
+						if (endPage > totalPage) {
+							endPage = totalPage;
+						}
+
+						if (startPage > 1) {
+					%>
+					<a class="arrow pprev"
+						href="club_search.jsp?club_gb_cd=<%=club_gb_cd%>&search=<%=search%>&club_at_cd=<%=club_at_cd%>&pageNumber=<%=1%>">처음</a>
+					<%
+						}
+						if (pageNumber > 1) {
+					%>
+					<a class="arrow prev"
+						href="club_search.jsp?club_gb_cd=<%=club_gb_cd%>&search=<%=search%>&club_at_cd=<%=club_at_cd%>&pageNumber=<%=pageNumber - 1%>">이전</a>
+					<%
+						}
+						for (int i = startPage; i <= endPage; i++) {
+							if (i == pageNumber) {
+					%>
+					<a class="active"
+						href="club_search.jsp?club_gb_cd=<%=club_gb_cd%>&search=<%=search%>&club_at_cd=<%=club_at_cd%>&pageNumber=<%=i%>"><%=i%></a>
+					<%
+						} else {
+					%>
+					<a
+						href="club_search.jsp?club_gb_cd=<%=club_gb_cd%>&search=<%=search%>&club_at_cd=<%=club_at_cd%>&pageNumber=<%=i%>"><%=i%></a>
+					<%
+						}
+						}
+					%>
+
+					<%
+						if (pageNumber < totalPage) {
+					%>
+					<a class="arrow next"
+						href="club_search.jsp?club_gb_cd=<%=club_gb_cd%>&search=<%=search%>&club_at_cd=<%=club_at_cd%>&pageNumber=<%=pageNumber + 1%>">다음</a>
+					<%
+						}
+					%>
+
+					<%
+						if (endPage < totalPage) {
+					%>
+					<a class="arrow nnext"
+						href="club_search.jsp?club_gb_cd=<%=club_gb_cd%>&search=<%=search%>&club_at_cd=<%=club_at_cd%>&pageNumber=<%=totalPage%>">끝</a>
+					<%
+						}
+					%>
+				</div>
 			</div>
 		</div>
 		<hr>
@@ -205,7 +348,20 @@
 				<address>Copyright 2019. 김정인, 김진섭. All Rights Reserved.</address>
 			</div>
 		</div>
-		
+
+
 	</div>
+
+	<script>
+		function postPopUp() {
+	<%if (username == null) {%>
+		alert("로그인이 필요합니다.");
+			return false;
+	<%} else {%>
+		window.open('', 'w', 'width=900,height=650,location=no,status=no');
+			return true;
+	<%}%>
+		}
+	</script>
 </body>
 </html>
